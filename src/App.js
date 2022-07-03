@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import {
-  Accordion, Container,
-  AccordionItem, AccordionPanel, AccordionButton, AccordionIcon, Box, Button, Flex
+  Accordion, Container, Modal, ModalOverlay,
+  ModalContent, ModalCloseButton, ModalBody, ModalHeader, FormControl, FormLabel, Input, NumberInput, ModalFooter, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
+  AccordionItem, AccordionPanel, AccordionButton, AccordionIcon, Box, Button, Flex,
 } from '@chakra-ui/react'; 
+import { useDisclosure } from '@chakra-ui/react';
 
 const exampleData = [
   {
@@ -29,8 +32,16 @@ const exampleData = [
 
 
 function App() {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
+
   return (
     <Container className="App" maxWidth='container.md' >
+      <Header onOpen={onOpen}  />
+      <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+        <TodoForm onClose={ onClose } />
+      </Modal>
       <Accordion allowToggle >
         {
           exampleData.map(ex => {
@@ -43,6 +54,23 @@ function App() {
 }
 
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Header~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+
+function Header({ onOpen }) {
+
+
+  return (
+    <Flex justify='space-between' align='baseline' mt='1rem' >
+    <Box >
+
+    <h1>My Learning Tracker</h1>
+    </Box>
+    <Button variant='outline' onClick={onOpen}>add task</Button>
+  </Flex>)
+}
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Todo~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 
 function TodoItem({ todo }) {
 
@@ -60,10 +88,11 @@ function TodoItem({ todo }) {
     <AccordionIcon />
     </AccordionButton>
     <AccordionPanel>
-      <Flex>
-        <Box bg='#D9D9D9' p='.5rem' borderRadius='md' flexGrow='0' display='flex' alignItens='flex-start'>
-          <Calendar view='month' />
-        </Box>
+          <Flex>
+            {/* <CalendarStyles> */}
+
+            <Calendar />
+            {/* </CalendarStyles> */}
         <Box >
           <Button variant='outline'>delete</Button>
         </Box>
@@ -73,5 +102,47 @@ function TodoItem({ todo }) {
     </Box>
   )
 }
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Crate todo~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+
+function TodoForm({ onClose }) {
+  
+  const initialRef = useRef(null)
+
+  return (
+    <ModalContent>
+      <ModalHeader>new item</ModalHeader>
+      <ModalCloseButton />
+      <ModalBody>
+        <FormControl isRequired onChange={(e)=>{console.log(e.target.value)}}>
+          <FormLabel>Skill to learn</FormLabel>
+          <Input ref={initialRef} placeholder='Todo' />
+        </FormControl>
+
+        <FormControl mt={4} isRequired onChange={(e)=>{console.log(e.target.value)}}>
+          <FormLabel>How many hours to spend training</FormLabel>
+          <NumberInput min={1} max={300} >
+          <NumberInputField id='amount' />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+          </NumberInput>
+        </FormControl>
+      </ModalBody>
+
+      <ModalFooter>
+        <Button colorScheme='blue' mr={3} >
+              Save
+        </Button>
+        <Button onClick={onClose}>Cancel</Button>
+      </ModalFooter>
+   </ModalContent>
+)
+
+}
+
+
 
 export default App;
