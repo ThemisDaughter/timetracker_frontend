@@ -1,39 +1,26 @@
-import { useRef } from 'react';
+// components
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import {
   Accordion, Container, Modal, ModalOverlay,
   ModalContent, ModalCloseButton, ModalBody, ModalHeader, FormControl, FormLabel, Input, NumberInput, ModalFooter, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
-  AccordionItem, AccordionPanel, AccordionButton, AccordionIcon, Box, Button, Flex,
+  AccordionItem, AccordionPanel, AccordionButton, AccordionIcon, Box, Button, Flex, useColorMode,
 } from '@chakra-ui/react'; 
+
+// hooks
+import { useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTodo, deleteTodo } from 'react-redux';
 
-const exampleData = [
-  {
-    title: 'learn blender',
-    total_time_planned: 360000,
-    total_time_studied: 14400,
-    completed: false,
-    abandoned: false
-  }, {
-    title: 'learn redux',
-    total_time_planned: 36000,
-    total_time_studied: 0,
-    completed: false,
-    abandoned: false
-  }, {
-    title: 'read Ray Dalio',
-    total_time_planned: 72000,
-    total_time_studied: 10800,
-    completed: false,
-    abandoned: false
-  }, 
-]
-
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 
 function App() {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen, onOpen, onClose } = useDisclosure() 
+  localStorage.removeItem('chakra-ui-color-mode');
+  localStorage.setItem('chakra-ui-color-mode', 'light')
 
+  const exampleData = useSelector(state => state.todos.todos)
 
   return (
     <Container className="App" maxWidth='container.md' >
@@ -74,6 +61,7 @@ function Header({ onOpen }) {
 
 function TodoItem({ todo }) {
 
+
   return (
     <Box borderRadius='lg' overflow='hidden' bg='rgba(77, 37, 94, 0.3)' mt='2'>
     <AccordionItem key={todo.title}>
@@ -90,8 +78,9 @@ function TodoItem({ todo }) {
     <AccordionPanel>
           <Flex>
             {/* <CalendarStyles> */}
-
+            {/* <DarkMode> */}
             <Calendar />
+            {/* </DarkMode> */}
             {/* </CalendarStyles> */}
         <Box >
           <Button variant='outline'>delete</Button>
@@ -107,22 +96,38 @@ function TodoItem({ todo }) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Crate todo~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 
 function TodoForm({ onClose }) {
-  
-  const initialRef = useRef(null)
+  const dispatch = useDispatch();
+  const [hours, setHours] = useState(0);
+  const [title, setTitle] = useState('');
+
+  const handleTitleChange = (val) => {
+    setTitle(val);
+  }
+  const handleHourChange = (val) => {
+    setHours(val);
+  }
+  const handleSubmit = () => {
+    // send to db
+    
+    // get element back
+    // send dispatch action to set in the state
+    // hope that redux updates the state 
+  }
+
 
   return (
     <ModalContent>
       <ModalHeader>new item</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <FormControl isRequired onChange={(e)=>{console.log(e.target.value)}}>
+        <FormControl isRequired >
           <FormLabel>Skill to learn</FormLabel>
-          <Input ref={initialRef} placeholder='Todo' />
+          <Input placeholder='Todo' onChange={(val)=>handleTitleChange(val)} />
         </FormControl>
 
-        <FormControl mt={4} isRequired onChange={(e)=>{console.log(e.target.value)}}>
+        <FormControl mt={4} isRequired >
           <FormLabel>How many hours to spend training</FormLabel>
-          <NumberInput min={1} max={300} >
+          <NumberInput min={1} max={300} value={hours} onChange={(val)=>handleHourChange(val)} >
           <NumberInputField id='amount' />
           <NumberInputStepper>
             <NumberIncrementStepper />
@@ -133,7 +138,7 @@ function TodoForm({ onClose }) {
       </ModalBody>
 
       <ModalFooter>
-        <Button colorScheme='blue' mr={3} >
+        <Button colorScheme='blue' mr={3} onClick={handleSubmit} >
               Save
         </Button>
         <Button onClick={onClose}>Cancel</Button>
