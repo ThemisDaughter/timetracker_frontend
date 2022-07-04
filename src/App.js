@@ -11,7 +11,10 @@ import {
 import { useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addTodo, deleteTodo } from 'react-redux';
+import { addTodo, deleteTodo } from './redux/features/todos';
+
+// envs
+const baseUrl = process.env.REACT_APP_BASE_URL ;
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 
@@ -100,16 +103,27 @@ function TodoForm({ onClose }) {
   const [hours, setHours] = useState(0);
   const [title, setTitle] = useState('');
 
-  const handleTitleChange = (val) => {
-    setTitle(val);
+  const handleTitleChange = (e) => {
+
+    setTitle(e.target.value);
   }
   const handleHourChange = (val) => {
     setHours(val);
   }
   const handleSubmit = () => {
     // send to db
-    
+    fetch(`${baseUrl}`, {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ title, hours })
+    })
     // get element back
+      .then(res => JSON.stringify(res))
+      .then(newTodo =>console.log(newTodo)
+        // dispatch(addTodo(newTodo))
+      )
     // send dispatch action to set in the state
     // hope that redux updates the state 
   }
@@ -122,7 +136,7 @@ function TodoForm({ onClose }) {
       <ModalBody>
         <FormControl isRequired >
           <FormLabel>Skill to learn</FormLabel>
-          <Input placeholder='Todo' onChange={(val)=>handleTitleChange(val)} />
+          <Input placeholder='Todo'value={title} onChange={handleTitleChange} />
         </FormControl>
 
         <FormControl mt={4} isRequired >
