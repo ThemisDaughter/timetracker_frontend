@@ -62,7 +62,8 @@ function FormModalTodo({ onClose }) {
       </ModalBody>
 
       <ModalFooter>
-        <Button colorScheme='blue' mr={3} onClick={handleSubmit} >
+        <Button colorScheme='blue' mr={3} onClick={handleSubmit} isLoading
+    loadingText='Submitting' >
               Save
         </Button>
         <Button onClick={onClose}>Cancel</Button>

@@ -2,7 +2,7 @@
 import Header from './Header';
 import TodoItem from './TodoItem';
 import FormModalTodo from './FormModalTodo';
-import { Accordion, Container, Link, Modal, ModalOverlay, Box } from '@chakra-ui/react'; 
+import { Accordion, Container, Link, Modal, ModalOverlay, Box, Spinner } from '@chakra-ui/react'; 
 
 // hooks
 import { useEffect } from 'react';
@@ -21,13 +21,33 @@ function App() {
 
   const todos = useSelector(selectAllTodos);
 
-  const todoStatus = useSelector(state => state.todos.status)
+  const todoStatus = useSelector(state => state.todos.status);
 
   useEffect(() => {
     if (todoStatus === 'idle') {
       dispatch(fetchTodos())
     }
   }, [todoStatus, dispatch])
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ list content changes according to state ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+  let content;
+  if (todoStatus === 'loading') {
+    content = <Spinner
+    thickness='4px'
+    speed='0.65s'
+    emptyColor='gray.200'
+    color='blue.500'
+      size='xl'
+     />
+  } else if (todoStatus === 'succeeded') {
+    if (!todos.length) {
+      content = <Box>No todos yet. <br/><Link onClick={onOpen}> Create first Todo 🚀 </Link></Box>
+    } else {    
+      content = todos.map(ex => <TodoItem todo={ex} key={`${ex.title}_${ex.id}`} />)
+    }
+  } else if (todoStatus === 'failed') {
+    content = <Box>Oops, something went very wrong. Send me a dm on github and I'll try to fix it</Box>
+  }
 
   return (
     <Container className="App" maxWidth='container.md' >
@@ -38,11 +58,7 @@ function App() {
       </Modal>
       <Accordion allowToggle >
         {
-          todos.length ? todos.map((ex, i)=> {
-            return <TodoItem todo={ex} key={`${ex.title}_${i}`} />
-          }) : <Box>
-              No todos yet. <br/><Link onClick={onOpen}> Create first Todo 🚀 </Link>
-          </Box>
+          content
         }
       </Accordion>
     </Container>
