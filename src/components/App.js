@@ -8,7 +8,7 @@ import { Accordion, Container, Link, Modal, ModalOverlay, Box, Spinner } from '@
 import { useEffect } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectAllTodos, fetchTodos, addTodo, deleteTodo } from '../redux/todos';
+import { selectAllTodos, fetchTodos } from '../redux/todos';
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~App~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 
@@ -48,7 +48,7 @@ function App() {
   } else if (todoStatus === 'failed') {
     content = <Box>Oops, something went very wrong. Send me a dm on github and I'll try to fix it</Box>
   }
-
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ return ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
   return (
     <Container className="App" maxWidth='container.md' >
       <Header onOpen={onOpen}  />

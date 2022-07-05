@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addTodo, deleteTodo } from '../redux/todos';
+import { addNewTodo } from '../redux/todos';
 
 import {
   Button, ModalContent, ModalCloseButton, ModalBody, ModalHeader, FormControl, FormLabel, Input, NumberInput, ModalFooter, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
@@ -12,6 +12,10 @@ const baseUrl = process.env.REACT_APP_BASE_URL
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Create todo~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 
 function FormModalTodo({ onClose }) {
+
+// justFor testing
+  const isLoading = {isLoading: false}
+
   const dispatch = useDispatch();
   const [hours, setHours] = useState(0);
   const [title, setTitle] = useState('');
@@ -23,19 +27,25 @@ function FormModalTodo({ onClose }) {
   const handleHourChange = (val) => {
     setHours(val);
   }
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // send to db
-    console.log(baseUrl)
-   
+    try {
+      // get element back?
+      // or hope that redux updates the state 
+      await dispatch(addNewTodo({ title, hours }))
+      setTitle('');
+      setHours('');
+
+    } catch (err) {
+      console.error(err.message)
+    }
   
-    // get element back
    
         // dispatch(addTodo(newTodo))
 
       // send dispatch action to set in the state
         // dispatch(addTodo(newTodo))
       
-    // hope that redux updates the state 
   }
 
 
@@ -62,7 +72,7 @@ function FormModalTodo({ onClose }) {
       </ModalBody>
 
       <ModalFooter>
-        <Button colorScheme='blue' mr={3} onClick={handleSubmit} isLoading
+        <Button colorScheme='blue' mr={3} onClick={handleSubmit} {...isLoading}
     loadingText='Submitting' >
               Save
         </Button>

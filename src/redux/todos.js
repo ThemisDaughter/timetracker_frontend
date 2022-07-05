@@ -3,12 +3,21 @@ import axios from 'axios';
 
 const baseURL = process.env.REACT_APP_BASE_URL;
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ async thunk for todos fetching ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ async thunk functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 export const fetchTodos = createAsyncThunk('todos/fetchTodos', async () => {
   try {
     const response = await axios.get(baseURL);
     console.log('axios response in thunk file', response.data)
+    return response.data;
+  } catch (err) {
+    return err.message;
+  }
+})
+
+export const addNewTodo = createAsyncThunk('todos/addNewTodo', async initialData => {
+  try {
+    const response = await axios.post(baseURL, { title: initialData.title, hours: initialData.hours });
     return response.data;
   } catch (err) {
     return err.message;
@@ -22,6 +31,7 @@ export const todoSlice = createSlice({
   initialState: {
     todos: [],
     status: 'idle', //| 'loading' | 'succeeded' | 'failed', // Adding a debouncer later to stop loading screeen from appearing if it takes less than .5 seconds to load
+    postStatus: 'idle', // |'loading' | 'succeeded' | failed
     error: null
   },
   reducers: {
@@ -50,16 +60,27 @@ export const todoSlice = createSlice({
       .addCase(fetchTodos.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
-    })
-  }
+      })
+      .addCase(addNewTodo.pending, (state) => {
+        state.postStatus = 'loading';
+      })
+      .addCase(addNewTodo.fulfilled, (state, action) => {
+        state.postStatus = 'succeeded';
+      state.todos.push(action.payload)
+      })
+      .addCase(addNewTodo.rejected, (state) => {
+        state.postStatus = 'failed';
+      })
+    }
 })
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ selector functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 // to keep all logic in one file, according to https://redux.js.org/tutorials/essentials/part-5-async-logic
+
 const selectAllTodos = state => state.todos.todos;
 const selectTodoById = (state, todoId) =>
   state.todos.todos.find(todo => todo.id === todoId);
 
 export { selectAllTodos, selectTodoById };
-export const { addTodo, deleteTodo } = todoSlice.actions;
+export const {  deleteTodo } = todoSlice.actions;
 export default todoSlice.reducer;
