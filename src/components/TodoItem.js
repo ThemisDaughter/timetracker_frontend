@@ -1,38 +1,58 @@
 
-import { AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Box, Button, Flex } from '@chakra-ui/react?;'
-import Calendar from 'react-calendar';
+import { Progress } from '@chakra-ui/react';
+import { AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Box, Button, Flex, DarkMode, Stack } from '@chakra-ui/react?;'
+// import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+
+// const ChakraCalendar = chakra(Calendar,   {baseStyle: {
+//   bg: 'papayawhip',
+//   color: 'red.500',
+// }});
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Todo~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 
 function TodoItem({ todo }) {
 
-
   return (
     <Box borderRadius='lg' overflow='hidden' bg='rgba(77, 37, 94, 0.3)' mt='2'>
-    <AccordionItem key={todo.title}>
+    <AccordionItem key={todo.title} border='none' >
+          <Stack  p='16px'>
 
-    <AccordionButton _expanded={{ bg: 'rgb(116, 19, 158)', color: 'white' }}>
-    <Box  flex='1' textAlign='left'>
-
+    <Flex w='100%' justify='space-between'>
         <h2>
           {todo.title}
         </h2>
-    </Box>
-    <AccordionIcon />
-    </AccordionButton>
+        <Button>start</Button>
+          </Flex>
+          <TotalProgress completed={todo.total_time_studied} total={ todo.total_time_planned } />
+          </Stack>
+        <AccordionButton>
+         <AccordionIcon />
+        </AccordionButton>  
     <AccordionPanel>
           <Flex>
-            {/* <CalendarStyles> */}
-            {/* <LightMode> */}
-            <Calendar />
-            {/* </LightMode> */}
-            {/* </CalendarStyles> */}
+            <DarkMode>
+              {/* <Box>
+            <ChakraCalendar />
+              </Box> */}
+            </DarkMode>
         <Box >
-          <Button variant='outline'>delete</Button>
+          <Button variant='outline'>abandon</Button>
         </Box>
       </Flex>
     </AccordionPanel>
     </AccordionItem>
+    </Box>
+  )
+}
+
+
+function TotalProgress({ completed, total }) {
+  return (
+    // maybe with a grid?
+    <Box>
+
+      <Progress value={completed / total} />
     </Box>
   )
 }

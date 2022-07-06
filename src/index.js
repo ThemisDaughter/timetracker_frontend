@@ -10,14 +10,14 @@ import theme from './styles/theme';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode> components render twice. my fault?
     <Provider store={store}>
       <ChakraProvider theme={theme}>
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
        <App />
      </ChakraProvider>
     </Provider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );
 
  

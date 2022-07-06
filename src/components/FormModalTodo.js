@@ -8,7 +8,6 @@ import {
   Button, ModalContent, ModalCloseButton, ModalBody, ModalHeader, FormControl, FormLabel, Input, NumberInput, ModalFooter, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper,
 } from '@chakra-ui/react';
 
-const baseUrl = process.env.REACT_APP_BASE_URL
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Create todo~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 
 function FormModalTodo({ onClose }) {
@@ -30,22 +29,13 @@ function FormModalTodo({ onClose }) {
   const handleSubmit = async () => {
     // send to db
     try {
-      // get element back?
-      // or hope that redux updates the state 
-      await dispatch(addNewTodo({ title, hours }))
-      setTitle('');
-      setHours('');
+      // get access to status to set the onClose action correctly
+      await dispatch(addNewTodo({ title, hours }));
+      setTimeout(()=>onClose(), 500)
 
     } catch (err) {
       console.error(err.message)
     }
-  
-   
-        // dispatch(addTodo(newTodo))
-
-      // send dispatch action to set in the state
-        // dispatch(addTodo(newTodo))
-      
   }
 
 
@@ -72,8 +62,12 @@ function FormModalTodo({ onClose }) {
       </ModalBody>
 
       <ModalFooter>
-        <Button colorScheme='blue' mr={3} onClick={handleSubmit} {...isLoading}
-    loadingText='Submitting' >
+        <Button
+          colorScheme='blue'
+          mr={3}
+          onClick={handleSubmit}
+          {...isLoading}
+          loadingText='Submitting' >
               Save
         </Button>
         <Button onClick={onClose}>Cancel</Button>

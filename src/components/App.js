@@ -8,7 +8,7 @@ import { Accordion, Container, Link, Modal, ModalOverlay, Box, Spinner } from '@
 import { useEffect } from 'react';
 import { useDisclosure } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectAllTodos, fetchTodos } from '../redux/todos';
+import { fetchTodos } from '../redux/todos';
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~App~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 
@@ -17,11 +17,11 @@ function App() {
   const { isOpen, onOpen, onClose } = useDisclosure() 
   const dispatch = useDispatch()
   localStorage.removeItem('chakra-ui-color-mode');
-  localStorage.setItem('chakra-ui-color-mode', 'light')
 
-  const todos = useSelector(selectAllTodos);
+  // const todos = useSelector(selectAllTodos);
 
   const todoStatus = useSelector(state => state.todos.status);
+  const todos = useSelector(state=> state.todos.todos)
 
   useEffect(() => {
     if (todoStatus === 'idle') {

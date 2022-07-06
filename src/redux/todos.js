@@ -37,8 +37,9 @@ export const todoSlice = createSlice({
   reducers: {
     addTodo: {
       reducer(state, action) {
-        console.log('payload', action.payload)
-        state.todos.push(action.payload);
+        const [result] = action.payload;
+        console.log('payload', result)
+        state.todos.push(result);
       }
     },
     deletePost: {
@@ -66,7 +67,9 @@ export const todoSlice = createSlice({
       })
       .addCase(addNewTodo.fulfilled, (state, action) => {
         state.postStatus = 'succeeded';
-      state.todos.push(action.payload)
+        const [newTodo] = action.payload;
+        console.log('in the addCase, pushing ', JSON.stringify(action.payload) + ' into ' + JSON.stringify(state.todos))
+      state.todos.push(newTodo)
       })
       .addCase(addNewTodo.rejected, (state) => {
         state.postStatus = 'failed';
@@ -77,10 +80,10 @@ export const todoSlice = createSlice({
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ selector functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 // to keep all logic in one file, according to https://redux.js.org/tutorials/essentials/part-5-async-logic
 
-const selectAllTodos = state => state.todos.todos;
+
 const selectTodoById = (state, todoId) =>
   state.todos.todos.find(todo => todo.id === todoId);
 
-export { selectAllTodos, selectTodoById };
+export { selectTodoById };
 export const {  deleteTodo } = todoSlice.actions;
 export default todoSlice.reducer;
