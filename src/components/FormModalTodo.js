@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
-import { useDisclosure } from '@chakra-ui/react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { addNewTodo } from '../redux/todos';
 
 import {
