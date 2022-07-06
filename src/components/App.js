@@ -16,9 +16,6 @@ function App() {
 
   const { isOpen, onOpen, onClose } = useDisclosure() 
   const dispatch = useDispatch()
-  localStorage.removeItem('chakra-ui-color-mode');
-
-  // const todos = useSelector(selectAllTodos);
 
   const todoStatus = useSelector(state => state.todos.status);
   const todos = useSelector(state=> state.todos.todos)

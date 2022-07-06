@@ -29,7 +29,8 @@ function FormModalTodo({ onClose }) {
     // send to db
     try {
       // get access to status to set the onClose action correctly
-      await dispatch(addNewTodo({ title, hours }));
+      const minutes = hours * 60;
+      await dispatch(addNewTodo({ title, minutes}));
       setTimeout(()=>onClose(), 500)
 
     } catch (err) {

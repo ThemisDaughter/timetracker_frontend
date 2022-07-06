@@ -17,7 +17,7 @@ export const fetchTodos = createAsyncThunk('todos/fetchTodos', async () => {
 
 export const addNewTodo = createAsyncThunk('todos/addNewTodo', async initialData => {
   try {
-    const response = await axios.post(baseURL, { title: initialData.title, hours: initialData.hours });
+    const response = await axios.post(baseURL, { title: initialData.title, minutes: initialData.minutes });
     return response.data;
   } catch (err) {
     return err.message;
@@ -84,6 +84,6 @@ const selectTodoById = (state, todoId) =>
   state.todos.todos.find(todo => todo.id === todoId);
 
 export { selectTodoById };
+  
 export const { deleteTodo } = todoSlice.actions;
-
 export default todoSlice.reducer;
