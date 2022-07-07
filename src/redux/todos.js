@@ -23,6 +23,16 @@ export const addNewTodo = createAsyncThunk('todos/addNewTodo', async initialData
     return err.message;
   }
 })
+export const updateCompletedTime = createAsyncThunk('todos/updateCompletedTime', async wsData => {
+  try {
+    const timeDiff = new Date(wsData.end_time) - new Date(wsData.start_time);
+    console.log('todos received that as the time difference: ', timeDiff, 'that abou right?', `${baseURL}/todo/${wsData.todoID}/${timeDiff}`)
+    const response = await axios.patch(`${baseURL}/todo/${wsData.todoID}/${timeDiff}`);
+    return response.data
+  } catch (err) {
+    return err.message;
+  }
+})
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
@@ -34,13 +44,7 @@ export const todoSlice = createSlice({
     postStatus: 'idle', // |'loading' | 'succeeded' | failed
     error: null
   },
-  reducers: {
-    addTodo: {
-      reducer(state, action) {
-        const [result] = action.payload;
-        state.todos.push(result);
-      }
-    },
+  reducers:{
     deleteTodo: {
       reducer(state, action) {
         const [{ id }] = action.payload;
@@ -73,6 +77,9 @@ export const todoSlice = createSlice({
       .addCase(addNewTodo.rejected, (state) => {
         state.postStatus = 'failed';
       })
+      .addCase(updateCompletedTime.fulfilled, (state, action) => {
+        console.log(action.payload)
+    })
     }
 })
 

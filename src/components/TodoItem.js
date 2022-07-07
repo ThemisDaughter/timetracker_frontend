@@ -6,7 +6,8 @@ import { AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Box, But
 // import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { createNewSession, fetchActiveSession } from '../redux/worksession';
+import { createNewSession, fetchActiveSession, endWorkSession } from '../redux/worksession';
+import { updateCompletedTime } from '../redux/todos'
 
 // const ChakraCalendar = chakra(Calendar,   {baseStyle: {
 //   bg: 'papayawhip',
@@ -17,23 +18,42 @@ import { createNewSession, fetchActiveSession } from '../redux/worksession';
 
 function TodoItem({ todo }) {
 
-  const [sessionTime, setSessionTime] = useState(100);
+  const [hasActiveSession, setHasActiveSession] = useState(false);
 
   const dispatch = useDispatch();
 
   const activeSession = useSelector(state => state.worksession.activeSession);
+  const completedSession = useSelector(state => state.worksession.completedSession);
   const sessionStatus = useSelector(state => state.worksession.status);
 
-  // if a session is not finished, the first thing to do is to fetch the session from the db
-  useEffect(() => {
-    if (sessionStatus === 'idle') dispatch(fetchActiveSession())
-  }, [sessionStatus, dispatch])
-  
 
-  const handleClick = async () => {
+  useEffect(() => {
+    if (sessionStatus === 'idle') dispatch(fetchActiveSession());
+    // sets hasActiveSession to true if the components todoid matches the active session todo id
+    if (activeSession) setHasActiveSession(activeSession.todoID === todo.id);
+  }, [sessionStatus, activeSession, dispatch, todo.id]);
+
+   
+
+  const onSessionStart = async () => {
     try {
       const date = new Date();
       await dispatch(createNewSession({start_time: date, todoID: todo.id}))
+    } catch (err) {
+      console.error(err.message)
+    }
+  }
+  const onSessionEnd = async () => {
+    try {
+      const date = new Date();
+      // setting worksession end_time
+      console.log(date)
+      setHasActiveSession(false);
+      console.log(todo.total_minutes_studied)
+      const {payload} = await dispatch(endWorkSession({ sessionID: activeSession.id, end_time: date }));
+      console.log('in the very unlikely case that dispatch action actually does return the value, this is it: ', payload)
+      await dispatch(updateCompletedTime(payload))
+      console.log(completedSession)
     } catch (err) {
       console.error(err.message)
     }
@@ -42,22 +62,27 @@ function TodoItem({ todo }) {
 
 
   return (
-    <Box borderRadius='lg' overflow='hidden' bg='rgba(77, 37, 94, 0.3)' mt='2'>
+    <Box borderRadius='lg' overflow='hidden' bg={hasActiveSession ? 'rgba(77, 37, 94, 0.6)' : 'rgba(77, 37, 94, 0.3)'} mt='2'>
     <AccordionItem key={todo.title} border='none' >
           <Stack  p='16px'>
 
     <Flex w='100%' justify='space-between'>
         <h2>
           {todo.title}
-        </h2>
-            <Button onClick={handleClick}>start</Button>
+            </h2>
+            {hasActiveSession
+              ? <Button onClick={ onSessionEnd }>stop session</Button>
+              : <Button onClick={onSessionStart}>start working</Button>
+            }
           </Flex>
             <Box w='100%'>
             {
-              activeSession && activeSession.todoID === todo.id && <Timer initialSeconds={sessionTime} />
+              hasActiveSession && <Timer startTime={activeSession.start_time} />
             }
           </Box>
-            <TotalProgress completed={todo.total_time_studied} total={ todo.total_time_planned } />
+          {
+            !hasActiveSession && <TotalProgress completed={todo.total_minutes_studied} total={ todo.total_minutes_planned } />
+          }
           </Stack>
         <AccordionButton>
          <AccordionIcon />
@@ -81,11 +106,12 @@ function TodoItem({ todo }) {
 
 
 function TotalProgress({ completed, total }) {
+  console.log(total/completed)
   return (
     // maybe with a grid?
     // if the TotalProgress belongs to the active session, the completed should increase every minute
     <Box>
-      <Progress value={completed / total} />
+      <Progress value={0.2} />
     </Box>
   )
 }
