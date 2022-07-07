@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios';
 
-const baseURL = process.env.REACT_APP_BASE_URL;
+const baseURL = process.env.REACT_APP_BASE_URL || 'http://localhost:5000'
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ async thunk functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
@@ -28,6 +28,7 @@ export const updateCompletedTime = createAsyncThunk('todos/updateCompletedTime',
     // time difference of worksession start and end in seconds
     const timeDiff = new Date(wsData.end_time) - new Date(wsData.start_time);
     // convert time already completed to ms and add to new timeDiff
+    
     const totalMs = parseInt(timeDiff + wsData.upTillNow * 60000);
     const response = await axios.patch(`${baseURL}/todo/${wsData.todoID}/${totalMs}`);
     return response.data
