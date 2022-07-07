@@ -1,3 +1,4 @@
+import { filter } from "@chakra-ui/react";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios';
 
@@ -25,9 +26,11 @@ export const addNewTodo = createAsyncThunk('todos/addNewTodo', async initialData
 })
 export const updateCompletedTime = createAsyncThunk('todos/updateCompletedTime', async wsData => {
   try {
+    // time difference of worksession start and end in seconds
     const timeDiff = new Date(wsData.end_time) - new Date(wsData.start_time);
-    console.log('todos received that as the time difference: ', timeDiff, 'that abou right?', `${baseURL}/todo/${wsData.todoID}/${timeDiff}`)
-    const response = await axios.patch(`${baseURL}/todo/${wsData.todoID}/${timeDiff}`);
+    // convert time already completed to ms and add to new timeDiff
+    const totalMs = parseInt(timeDiff + wsData.upTillNow * 60000);
+    const response = await axios.patch(`${baseURL}/todo/${wsData.todoID}/${totalMs}`);
     return response.data
   } catch (err) {
     return err.message;
@@ -54,7 +57,7 @@ export const todoSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addCase(fetchTodos.pending, (state, action) => {
+      .addCase(fetchTodos.pending, (state) => {
         state.status = 'loading';
       })
       .addCase(fetchTodos.fulfilled, (state, action) => {
@@ -78,7 +81,14 @@ export const todoSlice = createSlice({
         state.postStatus = 'failed';
       })
       .addCase(updateCompletedTime.fulfilled, (state, action) => {
-        console.log(action.payload)
+        const [updatedTodo] = action.payload;
+        console.log(updatedTodo)
+        // TODO: read up about Immer
+        const filteredTodos = state.todos.filter(el => el.id !== updatedTodo.id);
+        const concatenatedTodos = [updatedTodo, ...filteredTodos];
+        state.todos = concatenatedTodos;
+      
+        console.log(state.todos)
     })
     }
 })

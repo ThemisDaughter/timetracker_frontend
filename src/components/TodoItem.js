@@ -1,13 +1,13 @@
 
 import { useEffect, useState } from 'react';
-import { Progress } from '@chakra-ui/react';
 import Timer from './Timer';
 import { AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Box, Button, Flex, DarkMode, Stack } from '@chakra-ui/react?;'
 // import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { createNewSession, fetchActiveSession, endWorkSession } from '../redux/worksession';
-import { updateCompletedTime } from '../redux/todos'
+import { updateCompletedTime } from '../redux/todos';
+import Progress from './Progress';
 
 // const ChakraCalendar = chakra(Calendar,   {baseStyle: {
 //   bg: 'papayawhip',
@@ -47,13 +47,10 @@ function TodoItem({ todo }) {
     try {
       const date = new Date();
       // setting worksession end_time
-      console.log(date)
       setHasActiveSession(false);
-      console.log(todo.total_minutes_studied)
-      const {payload} = await dispatch(endWorkSession({ sessionID: activeSession.id, end_time: date }));
+      const { payload } = await dispatch(endWorkSession({ sessionID: activeSession.id, end_time: date }));
       console.log('in the very unlikely case that dispatch action actually does return the value, this is it: ', payload)
-      await dispatch(updateCompletedTime(payload))
-      console.log(completedSession)
+      await dispatch(updateCompletedTime({...payload, upTillNow: todo.total_minutes_studied}))
     } catch (err) {
       console.error(err.message)
     }
@@ -81,7 +78,7 @@ function TodoItem({ todo }) {
             }
           </Box>
           {
-            !hasActiveSession && <TotalProgress completed={todo.total_minutes_studied} total={ todo.total_minutes_planned } />
+            !hasActiveSession && <Progress completed={todo.total_minutes_studied} total={ todo.total_minutes_planned } />
           }
           </Stack>
         <AccordionButton>
@@ -105,15 +102,6 @@ function TodoItem({ todo }) {
 }
 
 
-function TotalProgress({ completed, total }) {
-  console.log(total/completed)
-  return (
-    // maybe with a grid?
-    // if the TotalProgress belongs to the active session, the completed should increase every minute
-    <Box>
-      <Progress value={0.2} />
-    </Box>
-  )
-}
+
 
 export default TodoItem;
