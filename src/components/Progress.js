@@ -1,5 +1,5 @@
-import { Progress, Icon, IconButton, Box, Grid, GridItem } from '@chakra-ui/react';
-
+import { Progress, Box } from '@chakra-ui/react';
+// also going to need Icon, IconButton, Grid, GridItem from chakra-ui
 function TotalProgress({ completed, total }) {
   return (
     // maybe with a grid?

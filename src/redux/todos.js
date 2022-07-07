@@ -1,4 +1,3 @@
-import { filter } from "@chakra-ui/react";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios';
 
